@@ -1,41 +1,36 @@
-let timeLeft = 30;
+let countries = ["Canada", "USA"];
+let timer;
+let timeLimit = 60; // 60 seconds
 let score = 0;
-let countries = []; // Array to store country names
-let timerId;
 
-document.getElementById('submitBtn').addEventListener('click', function() {
-    const countryInput = document.getElementById('countryInput').value.trim();
-    if (countryInput && !countries.includes(countryInput)) {
-        countries.push(countryInput);
+document.getElementById('startButton').addEventListener('click', startGame);
+
+function startGame() {
+    score = 0;
+    document.getElementById('countryInput').value = '';
+    timer = setTimeout(endGame, timeLimit * 1000);
+    alert("Game started! You have " + timeLimit + " seconds.");
+}
+
+function endGame() {
+    alert("Time's up! Your score: " + score);
+    saveRecord(score);
+}
+
+document.getElementById('countryInput').addEventListener('input', function() {
+    let input = this.value.trim();
+    if (countries.includes(input) && input !== "") {
         score++;
-        document.getElementById('scoreCount').innerText = score;
-        document.getElementById('countryInput').value = '';
+        countries = countries.filter(country => country !== input);
+        this.value = '';
     }
 });
 
-function startTimer() {
-    timerId = setInterval(() => {
-        timeLeft--;
-        document.getElementById('timeLeft').innerText = timeLeft;
-        if (timeLeft <= 0) {
-            clearInterval(timerId);
-            saveRecord();
-            alert('Time is up! Your score: ' + score);
-        }
-    }, 1000);
-}
-
-function saveRecord() {
-    const record = `Score: ${score}, Countries Named: ${countries.join(', ')}`;
+function saveRecord(score) {
+    // Logic to save score to record.txt or local storage
     if (navigator.userAgent.indexOf("Windows") !== -1) {
-        const blob = new Blob([record], { type: 'text/plain' });
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = 'record.txt';
-        link.click();
+        // Save to record.txt (server-side implementation required)
     } else {
-        localStorage.setItem('countryGameRecord', record);
+        localStorage.setItem('countryGameScore', score);
     }
 }
-
-window.onload = startTimer;

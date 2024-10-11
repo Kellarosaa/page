@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Interactive Text Box Creator</title>
+    <link href="styles.css" rel="stylesheet">
+    <title>Country Naming Game</title>
 </head>
 <body>
-    <div id="canvas" class="canvas"></div>
-    <button id="addTextBox">Add Text Box</button>
-    <input type="file" id="uploadImage" accept="image/*">
-    <button id="downloadPDF">Download as PDF</button>
+    <div class="container mx-auto text-center">
+        <h1 class="text-3xl font-bold my-4">Name All Countries!</h1>
+        <img src="world-map.jpg" alt="World Map" class="mx-auto mb-4">
+        <input type="text" id="countryInput" placeholder="Type a country name..." class="border p-2 rounded">
+        <button id="submitBtn" class="bg-blue-500 text-white p-2 rounded">Submit</button>
+        <div id="timer" class="text-xl my-4">Time Left: <span id="timeLeft">30</span> seconds</div>
+        <div id="score" class="text-xl my-4">Score: <span id="scoreCount">0</span></div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>

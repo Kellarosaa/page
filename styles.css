@@ -11,26 +11,21 @@ body {
     border: 2px solid #fff;
     border-radius: 10px;
     width: 300px;
+    background-color: #3CB371;
 }
 
-.hand {
-    margin: 10px 0;
-    padding: 10px;
-    border: 1px solid #fff;
+button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
     border-radius: 5px;
-    display: flex;
-    justify-content: center;
+    background-color: #fff;
+    color: #2E8B57;
 }
 
-.card {
-    width: 40px;
-    height: 60px;
-    margin: 0 5px;
-    background-color: #fff;
-    color: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #000;
-    border-radius: 3px;
+button:hover {
+    background-color: #2E8B57;
+    color: white;
 }

@@ -1,56 +1,90 @@
-let score = 0;
-let cards = [];
-const cardValues = {
-    '2': 2, '3': 3, '4': 4, '5': 5, '6': 6,
-    '7': 7, '8': 8, '9': 9, '10': 10,
-    'J': 10, 'Q': 10, 'K': 10, 'A': 11
-};
+const board = document.getElementById('board');
+const restartButton = document.getElementById('restart');
+let currentPlayer = 'X';
+let gameState = ['', '', '', '', '', '', '', '', ''];
 
-const scoreDisplay = document.getElementById('score');
-const messageDisplay = document.getElementById('message');
-const cardsDisplay = document.getElementById('cards');
+const winningCombinations = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+];
 
-document.getElementById('hit').addEventListener('click', hit);
-document.getElementById('stand').addEventListener('click', stand);
-document.getElementById('reset').addEventListener('click', reset);
-
-function hit() {
-    const card = drawCard();
-    cards.push(card);
-    score += cardValues[card];
-    updateDisplay();
-    checkBust();
+function createBoard() {
+    gameState.forEach((cell, index) => {
+        const cellElement = document.createElement('div');
+        cellElement.classList.add('cell');
+        cellElement.addEventListener('click', () => handleCellClick(index));
+        board.appendChild(cellElement);
+    });
 }
 
-function stand() {
-    messageDisplay.textContent = "You chose to stand. Final score: " + score;
-}
-
-function reset() {
-    score = 0;
-    cards = [];
-    updateDisplay();
-    messageDisplay.textContent = "";
-}
-
-function drawCard() {
-    const cardKeys = Object.keys(cardValues);
-    return cardKeys[Math.floor(Math.random() * cardKeys.length)];
-}
-
-function updateDisplay() {
-    scoreDisplay.textContent = "Score: " + score;
-    cardsDisplay.textContent = "Cards: " + cards.join(', ');
-}
-
-function checkBust() {
-    if (score > 21) {
-        messageDisplay.textContent = "Bust! You exceeded 21.";
-        disableButtons();
+function handleCellClick(index) {
+    if (gameState[index] === '') {
+        gameState[index] = currentPlayer;
+        render();
+        if (!checkWin()) {
+            currentPlayer = 'O';
+            botMove();
+        }
     }
 }
 
-function disableButtons() {
-    document.getElementById('hit').disabled = true;
-    document.getElementById('stand').disabled = true;
+function botMove() {
+    const availableCells = gameState.map((cell, index) => cell === '' ? index : null).filter(index => index !== null);
+    const winningMove = findWinningMove();
+    if (winningMove !== -1) {
+        gameState[winningMove] = currentPlayer;
+    } else {
+        const move = availableCells[Math.floor(Math.random() * availableCells.length)];
+        gameState[move] = currentPlayer;
+    }
+    render();
+    checkWin();
 }
+
+function findWinningMove() {
+    for (const combination of winningCombinations) {
+        const [a, b, c] = combination;
+        if (gameState[a] === 'O' && gameState[b] === 'O' && gameState[c] === '') return c;
+        if (gameState[a] === 'O' && gameState[c] === 'O' && gameState[b] === '') return b;
+        if (gameState[b] === 'O' && gameState[c] === 'O' && gameState[a] === '') return a;
+    }
+    return -1;
+}
+
+function render() {
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach((cell, index) => {
+        cell.textContent = gameState[index];
+    });
+}
+
+function checkWin() {
+    for (const combination of winningCombinations) {
+        const [a, b, c] = combination;
+        if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+            alert(`${gameState[a]} wins!`);
+            resetGame();
+            return true;
+        }
+    }
+    if (!gameState.includes('')) {
+        alert("It's a draw!");
+        resetGame();
+    }
+    return false;
+}
+
+function resetGame() {
+    gameState = ['', '', '', '', '', '', '', '', ''];
+    currentPlayer = 'X';
+    render();
+}
+
+restartButton.addEventListener('click', resetGame);
+createBoard();

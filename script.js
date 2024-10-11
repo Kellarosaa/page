@@ -1,36 +1,64 @@
-let countries = ["Canada", "USA"];
-let timer;
-let timeLimit = 60; // 60 seconds
-let score = 0;
+let money = 100;
+let playerCards = [];
+let dealerCards = [];
+let gameActive = true;
 
-document.getElementById('startButton').addEventListener('click', startGame);
+document.getElementById('money-amount').innerText = money;
 
-function startGame() {
-    score = 0;
-    document.getElementById('countryInput').value = '';
-    timer = setTimeout(endGame, timeLimit * 1000);
-    alert("Game started! You have " + timeLimit + " seconds.");
-}
-
-function endGame() {
-    alert("Time's up! Your score: " + score);
-    saveRecord(score);
-}
-
-document.getElementById('countryInput').addEventListener('input', function() {
-    let input = this.value.trim();
-    if (countries.includes(input) && input !== "") {
-        score++;
-        countries = countries.filter(country => country !== input);
-        this.value = '';
+function hit() {
+    if (gameActive) {
+        const card = drawCard();
+        playerCards.push(card);
+        updateDisplay();
+        checkForBust();
     }
-});
+}
 
-function saveRecord(score) {
-    // Logic to save score to record.txt or local storage
-    if (navigator.userAgent.indexOf("Windows") !== -1) {
-        // Save to record.txt (server-side implementation required)
+function stand() {
+    gameActive = false;
+    dealerPlay();
+}
+
+function drawCard() {
+    return Math.floor(Math.random() * 11) + 1; // Cards worth 1-11
+}
+
+function updateDisplay() {
+    document.getElementById('player-cards').innerText = `Player: ${playerCards.join(', ')}`;
+    document.getElementById('dealer-cards').innerText = `Dealer: ${dealerCards.join(', ')}`;
+}
+
+function checkForBust() {
+    const total = playerCards.reduce((acc, card) => acc + card, 0);
+    if (total > 21) {
+        document.getElementById('result-message').innerText = "You busted! Dealer wins.";
+        gameActive = false;
+    }
+}
+
+function dealerPlay() {
+    while (getTotal(dealerCards) < 17) {
+        dealerCards.push(drawCard());
+    }
+    determineWinner();
+}
+
+function getTotal(cards) {
+    return cards.reduce((acc, card) => acc + card, 0);
+}
+
+function determineWinner() {
+    const playerTotal = getTotal(playerCards);
+    const dealerTotal = getTotal(dealerCards);
+    if (dealerTotal > 21 || playerTotal > dealerTotal) {
+        document.getElementById('result-message').innerText = "You win!";
+        money += 10; // Example win amount
     } else {
-        localStorage.setItem('countryGameScore', score);
+        document.getElementById('result-message').innerText = "Dealer wins!";
+        money -= 10; // Example loss amount
     }
+    document.getElementById('money-amount').innerText = money;
 }
+
+document.getElementById('hit-button').addEventListener('click', hit);
+document.getElementById('stand-button').addEventListener('click', stand);

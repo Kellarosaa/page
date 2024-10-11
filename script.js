@@ -46,26 +46,3 @@ document.getElementById('downloadPDF').addEventListener('click', function() {
     // PDF download functionality to be implemented
     alert('PDF download functionality is not yet implemented.');
 });
-
-            element.style.left = pageX - shiftX + 'px';
-            element.style.top = pageY - shiftY + 'px';
-        }
-
-        function onMouseMove(event) {
-            moveAt(event.pageX, event.pageY);
-        }
-
-        document.addEventListener('mousemove', onMouseMove);
-
-        element.onmouseup = function() {
-            document.removeEventListener('mousemove', onMouseMove);
-            element.onmouseup = null;
-        };
-    };
-
-    element.ondragstart = function() {
-        return false;
-    };
-}
-
-// PDF Download functionality can be implemented using libraries like jsPDF

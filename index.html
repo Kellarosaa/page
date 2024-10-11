@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <title>Country Naming Game</title>
+    <title>Blackjack Game</title>
 </head>
-<body class="flex flex-col items-center justify-center h-screen bg-gray-100">
-    <h1 class="text-3xl font-bold mb-4">Name All Countries!</h1>
-    <input type="text" id="countryInput" class="border border-gray-300 p-2 rounded mb-4" placeholder="Type a country name...">
-    <img src="path/to/your/image.jpg" alt="World Map" class="mb-4">
-    <button id="startButton" class="bg-blue-500 text-white p-2 rounded">Start Game</button>
+<body>
+    <div class="game-container">
+        <h1>Blackjack</h1>
+        <div id="money-display">Money: $<span id="money-amount">100</span></div>
+        <div id="game-area">
+            <div id="dealer-cards" class="cards"></div>
+            <div id="player-cards" class="cards"></div>
+        </div>
+        <button id="hit-button">Hit</button>
+        <button id="stand-button">Stand</button>
+        <div id="result-message"></div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>

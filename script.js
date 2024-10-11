@@ -1,100 +1,56 @@
-let playerHand = [];
-let dealerHand = [];
-let deck = [];
-let gameStatus = document.getElementById('game-status');
+let score = 0;
+let cards = [];
+const cardValues = {
+    '2': 2, '3': 3, '4': 4, '5': 5, '6': 6,
+    '7': 7, '8': 8, '9': 9, '10': 10,
+    'J': 10, 'Q': 10, 'K': 10, 'A': 11
+};
 
-function createDeck() {
-    const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
-    const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-    for (let suit of suits) {
-        for (let value of values) {
-            deck.push({ suit, value });
-        }
+const scoreDisplay = document.getElementById('score');
+const messageDisplay = document.getElementById('message');
+const cardsDisplay = document.getElementById('cards');
+
+document.getElementById('hit').addEventListener('click', hit);
+document.getElementById('stand').addEventListener('click', stand);
+document.getElementById('reset').addEventListener('click', reset);
+
+function hit() {
+    const card = drawCard();
+    cards.push(card);
+    score += cardValues[card];
+    updateDisplay();
+    checkBust();
+}
+
+function stand() {
+    messageDisplay.textContent = "You chose to stand. Final score: " + score;
+}
+
+function reset() {
+    score = 0;
+    cards = [];
+    updateDisplay();
+    messageDisplay.textContent = "";
+}
+
+function drawCard() {
+    const cardKeys = Object.keys(cardValues);
+    return cardKeys[Math.floor(Math.random() * cardKeys.length)];
+}
+
+function updateDisplay() {
+    scoreDisplay.textContent = "Score: " + score;
+    cardsDisplay.textContent = "Cards: " + cards.join(', ');
+}
+
+function checkBust() {
+    if (score > 21) {
+        messageDisplay.textContent = "Bust! You exceeded 21.";
+        disableButtons();
     }
 }
 
-function shuffleDeck() {
-    for (let i = deck.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [deck[i], deck[j]] = [deck[j], deck[i]];
-    }
+function disableButtons() {
+    document.getElementById('hit').disabled = true;
+    document.getElementById('stand').disabled = true;
 }
-
-function dealCard(hand) {
-    hand.push(deck.pop());
-}
-
-function calculateHandValue(hand) {
-    let value = 0;
-    let aces = 0;
-    for (let card of hand) {
-        if (['J', 'Q', 'K'].includes(card.value)) {
-            value += 10;
-        } else if (card.value === 'A') {
-            aces++;
-            value += 11;
-        } else {
-            value += parseInt(card.value);
-        }
-    }
-    while (value > 21 && aces) {
-        value -= 10;
-        aces--;
-    }
-    return value;
-}
-
-function updateGameStatus() {
-    const playerValue = calculateHandValue(playerHand);
-    const dealerValue = calculateHandValue(dealerHand);
-    gameStatus.innerText = `Player: ${playerValue} | Dealer: ${dealerValue}`;
-    displayCards();
-}
-
-function displayCards() {
-    const playerHandDiv = document.getElementById('player-hand');
-    const dealerHandDiv = document.getElementById('dealer-hand');
-    playerHandDiv.innerHTML = '';
-    dealerHandDiv.innerHTML = '';
-
-    playerHand.forEach(card => {
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'card';
-        cardDiv.innerText = `${card.value} of ${card.suit}`;
-        playerHandDiv.appendChild(cardDiv);
-    });
-
-    dealerHand.forEach(card => {
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'card';
-        cardDiv.innerText = `${card.value} of ${card.suit}`;
-        dealerHandDiv.appendChild(cardDiv);
-    });
-}
-
-function resetGame() {
-    playerHand = [];
-    dealerHand = [];
-    deck = [];
-    createDeck();
-    shuffleDeck();
-    dealCard(playerHand);
-    dealCard(dealerHand);
-    updateGameStatus();
-}
-
-document.getElementById('hit-button').addEventListener('click', () => {
-    dealCard(playerHand);
-    updateGameStatus();
-});
-
-document.getElementById('stand-button').addEventListener('click', () => {
-    while (calculateHandValue(dealerHand) < 17) {
-        dealCard(dealerHand);
-    }
-    updateGameStatus();
-});
-
-document.getElementById('reset-button').addEventListener('click', resetGame);
-
-resetGame();

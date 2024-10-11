@@ -1,65 +1,41 @@
-document.getElementById('addTextBox').addEventListener('click', function() {
-    const textBox = document.createElement('div');
-    textBox.className = 'text-box';
-    textBox.contentEditable = true;
-    textBox.style.left = '50px';
-    textBox.style.top = '50px';
-    textBox.innerText = 'Edit me!';
-    textBox.onmousedown = function(e) {
-        let shiftX = e.clientX - textBox.getBoundingClientRect().left;
-        let shiftY = e.clientY - textBox.getBoundingClientRect().top;
+let timeLeft = 30;
+let score = 0;
+let countries = []; // Array to store country names
+let timerId;
 
-        function moveAt(pageX, pageY) {
-            textBox.style.left = pageX - shiftX + 'px';
-            textBox.style.top = pageY - shiftY + 'px';
-        }
-
-        function onMouseMove(e) {
-            moveAt(e.pageX, e.pageY);
-        }
-
-        document.addEventListener('mousemove', onMouseMove);
-
-        textBox.onmouseup = function() {
-            document.removeEventListener('mousemove', onMouseMove);
-            textBox.onmouseup = null;
-        };
-    };
-
-    document.getElementById('canvas').appendChild(textBox);
+document.getElementById('submitBtn').addEventListener('click', function() {
+    const countryInput = document.getElementById('countryInput').value.trim();
+    if (countryInput && !countries.includes(countryInput)) {
+        countries.push(countryInput);
+        score++;
+        document.getElementById('scoreCount').innerText = score;
+        document.getElementById('countryInput').value = '';
+    }
 });
 
-document.getElementById('uploadImage').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-    img.style.left = '100px';
-    img.style.top = '100px';
-    img.onload = function() {
-        URL.revokeObjectURL(img.src);
-    };
-    img.onmousedown = function(e) {
-        let shiftX = e.clientX - img.getBoundingClientRect().left;
-        let shiftY = e.clientY - img.getBoundingClientRect().top;
-
-        function moveAt(pageX, pageY) {
-            img.style.left = pageX - shiftX + 'px';
-            img.style.top = pageY - shiftY + 'px';
+function startTimer() {
+    timerId = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timeLeft').innerText = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timerId);
+            saveRecord();
+            alert('Time is up! Your score: ' + score);
         }
+    }, 1000);
+}
 
-        function onMouseMove(e) {
-            moveAt(e.pageX, e.pageY);
-        }
+function saveRecord() {
+    const record = `Score: ${score}, Countries Named: ${countries.join(', ')}`;
+    if (navigator.userAgent.indexOf("Windows") !== -1) {
+        const blob = new Blob([record], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'record.txt';
+        link.click();
+    } else {
+        localStorage.setItem('countryGameRecord', record);
+    }
+}
 
-        document.addEventListener('mousemove', onMouseMove);
-
-        img.onmouseup = function() {
-            document.removeEventListener('mousemove', onMouseMove);
-            img.onmouseup = null;
-        };
-    };
-
-    document.getElementById('canvas').appendChild(img);
-});
-
-// Functionality to download as PDF can be implemented using libraries like jsPDF
+window.onload = startTimer;
